@@ -1,0 +1,25 @@
+# ==============================================================================
+# REGIONAL DOWNSCALING EXPERIMENT CONFIGURATION
+# ==============================================================================
+
+# GENERAL OPTIONS
+model: "UNet-Baseline"
+seed: 32
+precision: "16-mixed"
+
+# DATASET SETTINGS
+img_resolution: [256, 256]
+batch_size: 16
+num_workers: 4
+
+# CHANNEL SELECTION & ABLATION SETTINGS
+used_channels: [0, 1, 2, 3, 4, 5, 6]
+img_in_channels: 7
+img_out_channels: 1
+
+# TRAINING SETTINGS
+lr: 1.0e-4
+epochs: 1
+use_psd_loss: false
+anneal_epochs: 1
+savepreds_path: "/kaggle/working/outputs"
