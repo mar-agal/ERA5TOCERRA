@@ -17,7 +17,7 @@ class GreeceDownscalingDataModule(LightningDataModule):
     def __init__(
         self,
         batch_size: int = 16,
-        num_workers: int = 4,
+        num_workers: int = 2,
         pin_memory: bool = True,
         upsample: bool = True,
         used_channels: Optional[List[int]] = None,
@@ -43,8 +43,8 @@ class GreeceDownscalingDataModule(LightningDataModule):
         
         self.channel_indices = used_channels if used_channels is not None else list(range(7))
         
-        self.persistent_workers = True if num_workers > 0 else False
-        self.prefetch_factor = 2 if num_workers > 0 else None
+        self.persistent_workers = False
+        self.prefetch_factor = 2 if num_workers > 0 else None        
 
     def setup(self, stage: Optional[str] = None) -> None:
         torch.manual_seed(self.hparams.seed)
