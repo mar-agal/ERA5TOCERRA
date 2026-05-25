@@ -19,7 +19,7 @@ img_out_channels: 1
 
 # TRAINING SETTINGS
 lr: 1.0e-4
-epochs: 80 
+epochs: 80
 use_psd_loss: false
-anneal_epochs: 1
+anneal_epochs: 0
 savepreds_path: "/kaggle/working/outputs"
