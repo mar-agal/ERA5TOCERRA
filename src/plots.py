@@ -68,7 +68,7 @@ def generate_temperature_diagnostic_plots() -> None:
         plt.loglog(k_ref, psd_m_mean, label=name, alpha=0.85, lw=1.5)
     plt.xlabel(r"Wavenumber $k$ (cycles deg$^{-1}$)", fontsize=11)
     plt.ylabel("Power Spectral Density (PSD)", fontsize=11)
-    plt.title(f"Spatial PSD of {var_name}", fontsize=11, fontweight="bold")
+    plt.title(f" PSD of {var_name}", fontsize=11, fontweight="bold")
     plt.legend(loc="lower left", frameon=True, facecolor="white")
     plt.grid(True, which="both", ls="--", alpha=0.4)
     plt.tight_layout()
