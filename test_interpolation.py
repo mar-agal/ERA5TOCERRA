@@ -5,7 +5,7 @@ import numpy as np
 import xarray as xr
 import pandas as pd
 
-current_dir = pathlib.Path(__file__).resolve().parent.parent
+current_dir = pathlib.Path(__file__).resolve().parent
 if str(current_dir) not in sys.path:
     sys.path.insert(0, str(current_dir))
 
@@ -114,7 +114,8 @@ def run_interpolation_pipeline():
     gc.collect()
 
     print("\n🧮 Launching metrics calculation modules...")
-    calculate_final_metrics_with_timeseries(preds=np.load(BILINEAR_PATH), targets=np.load(CERRA_NPY_PATH), output_dir=str(BASE_DIR))
+    # Επιβολή του "bilinear" για σωστή ονοματοδοσία αρχείων
+    calculate_final_metrics_with_timeseries(preds=np.load(BILINEAR_PATH), targets=np.load(CERRA_NPY_PATH), output_dir=str(BASE_DIR), model_name="bilinear")
 
     print("\n📊 Launching physical validation charts (PSD & Log-PDF)...")
     plots_module.generate_temperature_diagnostic_plots()
