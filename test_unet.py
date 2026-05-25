@@ -123,7 +123,7 @@ if __name__ == "__main__":
         model_list_plots = [final_preds]
         model_names_plots = ["UNet-Baseline"]
     
-    calculate_final_metrics_with_timeseries(preds=final_preds, targets=final_targets, output_dir=base_output_dir)
+    calculate_final_metrics_with_timeseries(preds=final_preds, targets=final_targets, output_dir=base_output_dir, model_name="unet")
 
     print("📈 Generating physical validation charts (PSD & Log-PDF)...")
     plots_module.generate_temperature_diagnostic_plots()

@@ -1,9 +1,6 @@
 import torch
 import torch.nn as nn
 
-# Model architecture adapted from components reference repository layout:
-# https://github.com/DSIP-FBK/DiffScaler/blob/main/src/models/components/unet.py
-
 class DoubleConv(nn.Module):
     def __init__(self, in_c, out_c):
         super(DoubleConv, self).__init__()

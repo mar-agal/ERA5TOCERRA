@@ -2,7 +2,7 @@ import os
 import numpy as np
 from skimage.metrics import structural_similarity as ssim_fn
 
-def calculate_final_metrics_with_timeseries(preds: np.ndarray, targets: np.ndarray, output_dir: str) -> list:
+def calculate_final_metrics_with_timeseries(preds: np.ndarray, targets: np.ndarray, output_dir: str, model_name: str = "unet") -> list:
     if preds.ndim == 4: preds = preds.squeeze(1)
     if targets.ndim == 4: targets = targets.squeeze(1)
 
@@ -34,11 +34,12 @@ def calculate_final_metrics_with_timeseries(preds: np.ndarray, targets: np.ndarr
     mean_ssim = float(np.mean(ssim_time_series))
     mean_psnr = float(np.mean(psnr_time_series))
 
-    np.save(os.path.join(output_dir, "unet_ssim_timeseries.npy"), np.array(ssim_time_series))
-    np.save(os.path.join(output_dir, "unet_psnr_timeseries.npy"), np.array(psnr_time_series))
+    np.save(os.path.join(output_dir, f"{model_name}_ssim_timeseries.npy"), np.array(ssim_time_series))
+    np.save(os.path.join(output_dir, f"{model_name}_psnr_timeseries.npy"), np.array(psnr_time_series))
 
-    with open(os.path.join(output_dir, "metrics_summary.txt"), "w") as f:
-        f.write("[Global Test Evaluation Summary]\n")
+    summary_file = os.path.join(output_dir, f"{model_name}_metrics_summary.txt")
+    with open(summary_file, "w") as f:
+        f.write(f"[{model_name.upper()} Test Evaluation Summary]\n")
         f.write(f"Global_MAE: {mae:.6f}\n")
         f.write(f"Global_MSE: {mse:.6f}\n")
         f.write(f"Global_RMSE: {rmse:.6f}\n")
@@ -47,14 +48,14 @@ def calculate_final_metrics_with_timeseries(preds: np.ndarray, targets: np.ndarr
         f.write(f"Global_PSNR: {mean_psnr:.6f}\n")
 
     print("=" * 65)
-    print("👑 METEOROLOGICAL EVALUATION REPORT (TRUE GLOBAL MAX/MIN SCALING)")
+    print(f"👑 METEOROLOGICAL EVALUATION REPORT ({model_name.upper()})")
     print("=" * 65)
-    print(f" ▶ Global Mean Absolute Error (MAE)  : {mae:.4f} K")
-    print(f" ▶ Global Mean Squared Error (MSE)   : {mse:.4f} K²")
+    print(f" ▶ Global Mean Absolute Error (MAE)   : {mae:.4f} K")
+    print(f" ▶ Global Mean Squared Error (MSE)    : {mse:.4f} K²")
     print(f" ▶ Global Root Mean Squared Error (RMSE): {rmse:.4f} K")
     print(f" ▶ Systematic Model Variance Bias (BIAS): {bias:.4f} K")
-    print(f" ▶ Global Structural Similarity (SSIM): {mean_ssim:.4f} ⭐ (Global Scaled [0,1])")
-    print(f" ▶ Global Peak Signal-to-Noise (PSNR) : {mean_psnr:.4f} dB ⭐ (Global Scaled [0,1])")
+    print(f" ▶ Global Structural Similarity (SSIM): {mean_ssim:.4f} ⭐")
+    print(f" ▶ Global Peak Signal-to-Noise (PSNR) : {mean_psnr:.4f} dB ⭐")
     print("=" * 65)
 
     return ssim_time_series

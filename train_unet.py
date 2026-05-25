@@ -72,7 +72,7 @@ if __name__ == "__main__":
     trainer = Trainer(
         max_epochs=cfg["epochs"],
         accelerator="gpu",
-        devices=2,                                                                                                    
+        devices=2,                                                                                                                                                 
         strategy="ddp_find_unused_parameters_true",
         callbacks=callbacks_list,
         precision=cfg["precision"],
