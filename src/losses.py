@@ -64,3 +64,49 @@ class FourierLossCarlo(nn.Module):
             weights = torch.ones_like(k_grid)
 
         return weights.unsqueeze(0).unsqueeze(0)
+
+
+
+import torch
+import torch.nn.functional as F
+
+def adopt_weight(weight, global_step, threshold=0, value=0.0):
+    if global_step < threshold:
+        return value
+    return weight
+
+
+def hinge_loss(logits_real, logits_fake):
+    loss_real = torch.mean(F.relu(1.0 - logits_real))
+    loss_fake = torch.mean(F.relu(1.0 + logits_fake))
+    return 0.5 * (loss_real + loss_fake)
+
+
+def l1_loss(x, y):
+    return torch.abs(x - y)
+
+
+def mae_loss(x, y):
+    return torch.mean(torch.abs(x - y))
+
+
+def generator_adversarial_loss(logits_fake):
+    return -torch.mean(logits_fake)
+
+
+def calculate_adaptive_weight(nll_loss, g_loss, last_layer, discriminator_weight=0.2):
+    nll_grads = torch.autograd.grad(
+        nll_loss,
+        last_layer,
+        retain_graph=True
+    )[0]
+
+    g_grads = torch.autograd.grad(
+        g_loss,
+        last_layer,
+        retain_graph=True
+    )[0]
+
+    d_weight = torch.norm(nll_grads) / (torch.norm(g_grads) + 1e-4)
+    d_weight = torch.clamp(d_weight, 0.0, 1e4).detach()
+    return d_weight * discriminator_weight
