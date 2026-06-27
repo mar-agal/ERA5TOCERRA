@@ -1,0 +1,12 @@
+api:
+  key: PASTE_YOUR_KEY_HERE
+  url: https://cds.climate.copernicus.eu/api
+paths:
+  cerra_data: /content/drive/MyDrive/CERRA_Data
+  combined: /content/drive/MyDrive/ERA5_data/combined
+  config: /content/drive/MyDrive/CERRA_processing/config
+  era5_raw: /content/drive/MyDrive/ERA5_data
+  final: /content/drive/MyDrive/CERRA_processing/final_standardized
+  final_era5: /content/drive/MyDrive/ERA5_data/final_standardized
+  remapped: /content/drive/MyDrive/CERRA_processing/latlon_proj_Greece/remapped
+  root: /content/drive/MyDrive/CERRA_processing
