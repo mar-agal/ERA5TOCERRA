@@ -16,8 +16,8 @@ A collection of modules for processing climate data to support super-resolution 
 This notebook serves as the entry point for the data pipeline, handling the transition from raw climate data to processed inputs.
 
 - **Data Acquisition:** Automates the download of GRIB files from the Copernicus Climate Data Store (CDS) API:
-    - **ERA5 (high resolution) variables:** Temperature ($t$), zonal wind ($u$), meridional wind ($v$), geopotential ($z$) at 850hPa, and dewpoint temperature ($2d$).
-    - **CERRA (low resolution) variables:** 2m temperature ($t2m$), orography ($orog$), and land-sea mask ($lsm$).
+    - **ERA5 variables:** Temperature ($t$), zonal wind ($u$), meridional wind ($v$), geopotential ($z$) at 850hPa, and dewpoint temperature ($2d$).
+    - **CERRA variables:** 2m temperature ($t2m$), orography ($orog$), and land-sea mask ($lsm$).
 - **Data Transformation:** Converts downloaded GRIB files into NetCDF format and structures them into (B, C, W, H) tensors, where:
     - **B (Batch):** Temporal/batch dimension.
     - **C (Channels):** Atmospheric variables/features.
