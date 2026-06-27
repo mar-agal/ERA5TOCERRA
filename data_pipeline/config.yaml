@@ -10,3 +10,4 @@ paths:
   final_era5: /content/drive/MyDrive/ERA5_data/final_standardized
   remapped: /content/drive/MyDrive/CERRA_processing/latlon_proj_Greece/remapped
   root: /content/drive/MyDrive/CERRA_processing
+  split_output: /content/drive/MyDrive/data_processing
