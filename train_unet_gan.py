@@ -4,8 +4,7 @@ import yaml
 import torch
 
 from lightning import Trainer, Callback
-from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
-
+from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor, EarlyStopping
 from src.data_module import GreeceDownscalingDataModule
 from src.models.unet_gan.gan_lightning import GreeceDownscalingGANModule
 
@@ -88,13 +87,19 @@ if __name__ == "__main__":
 
     lr_monitor = LearningRateMonitor(logging_interval="epoch")
     epoch_logger = LogEvery10Epochs()
-
+    early_stop = EarlyStopping(
+    monitor="val/unetgan_loss",
+    patience=12,
+    mode="min",
+    verbose=True,
+)
     callbacks_list = [
-        best_checkpoint,
-        step_checkpoint,
-        lr_monitor,
-        epoch_logger,
-    ]
+    best_checkpoint,
+    step_checkpoint,
+    lr_monitor,
+    epoch_logger,
+    early_stop,
+]
 
     trainer = Trainer(
         max_epochs=cfg["epochs"],
