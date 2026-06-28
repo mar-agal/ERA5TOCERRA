@@ -28,7 +28,7 @@ class LogEvery10Epochs(Callback):
 
 
 if __name__ == "__main__":
-    with open("config.yaml", "r") as f:
+    with open("config_unet_gan.yaml", "r") as f:
         cfg = yaml.safe_load(f)
 
     weights_dir = "/kaggle/working/weights_gan"
