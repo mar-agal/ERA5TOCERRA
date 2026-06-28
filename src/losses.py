@@ -121,7 +121,7 @@ class PatchGANPSDGeneratorLoss(nn.Module):
         self,
         discriminator: nn.Module,
         lambda_psd: float = 0.05,
-        disc_start: int = 50000,
+        disc_start: int = 3600,
         disc_factor: float = 1.0,
         disc_weight: float = 0.2,
     ):
