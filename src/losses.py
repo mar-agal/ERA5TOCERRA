@@ -22,6 +22,10 @@ class FourierLossCarlo(nn.Module):
         """
         Computes spatial pixel-wise MSE alongside spectral power distribution loss.
         """
+        # FFT is numerically safer in float32.
+        # This avoids NaNs when the Trainer uses 16-mixed precision.
+        sr = sr.float()
+        hr = hr.float()
         sr_psd = self.getpsd(sr)
         hr_psd = self.getpsd(hr)
         
