@@ -7,7 +7,7 @@ from lightning import Trainer, Callback
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 
 from src.data_module import GreeceDownscalingDataModule
-from src.models.unet.unet_huber_psd_lightning import GreeceDownscalingHuberPSDModule
+from src.models.unet.unet_psd_h_lightning import GreeceDownscalingHuberPSDModule
 
 
 class LogEveryEpoch(Callback):
