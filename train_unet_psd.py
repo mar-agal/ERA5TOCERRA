@@ -1,47 +1,54 @@
-import torch
-import yaml
 import os
 import time
+import yaml
+import torch
+
 from lightning import Trainer, Callback
-from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor, EarlyStopping
+from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 
 from src.data_module import GreeceDownscalingDataModule
-from src.models.unet import GreeceDownscalingModule
+from src.models.unet.unet_huber_psd_lightning import GreeceDownscalingHuberPSDModule
+
 
 class LogEveryEpoch(Callback):
-    """
-    Custom callback to log training and validation metrics at the end of every epoch.
-    """
-    def on_validation_epoch_end(self, trainer: Trainer, pl_module: GreeceDownscalingModule) -> None:
+    def on_validation_epoch_end(self, trainer, pl_module):
         if trainer.sanity_checking or trainer.global_rank != 0:
             return
-            
-        current_epoch = trainer.current_epoch
+
+        epoch = trainer.current_epoch
+        train_loss = trainer.callback_metrics.get("train/loss_epoch")
         val_loss = trainer.callback_metrics.get("val/loss")
-        train_loss = trainer.callback_metrics.get("train/loss")
-        
-        log_msg = f"\n📢 [EPOCH {current_epoch:03d}]"
+        lambda_psd = trainer.callback_metrics.get("loss/lambda_psd")
+
+        msg = f"\n📢 [EPOCH {epoch:03d}]"
+
         if train_loss is not None:
-            log_msg += f" Train Loss: {train_loss:.6f} |"
+            msg += f" Train Loss: {train_loss:.6f} |"
+
         if val_loss is not None:
-            log_msg += f" Validation Loss: {val_loss:.6f}"
-        print(log_msg)
+            msg += f" Val Loss: {val_loss:.6f} |"
+
+        if lambda_psd is not None:
+            msg += f" Lambda PSD: {lambda_psd:.6f}"
+
+        print(msg)
+
 
 if __name__ == "__main__":
-    # Load experiment configurations
     with open("config.yaml", "r") as f:
         cfg = yaml.safe_load(f)
 
     print("📥 Initializing DataModule...")
+
     data_module = GreeceDownscalingDataModule(
         batch_size=cfg["batch_size"],
         num_workers=cfg["num_workers"],
         pin_memory=True,
         upsample=True,
-        used_channels=cfg["used_channels"]
+        used_channels=cfg["used_channels"],
+        seed=cfg["seed"]
     )
-    
-    # Configure dataset and statistics file paths on Kaggle
+
     data_module.era5_train_path = "/kaggle/input/datasets/mariaagalioti/era5-train/era5_train.nc"
     data_module.cerra_train_path = "/kaggle/input/datasets/mariaagalioti/cerra-train/cerra_train.nc"
     data_module.era5_val_path = "/kaggle/input/datasets/mariaagalioti/dataset/era5_val.nc"
@@ -52,76 +59,73 @@ if __name__ == "__main__":
     data_module.cerra_stats_json = "/kaggle/input/datasets/mariaagalioti/stats-era-cerra/cerra_train_temp_stats.json"
     data_module.orog_stats_json = "/kaggle/input/datasets/mariaagalioti/stats-era-cerra/orography_stats.json"
 
-    print("🏗️ Building Modular UNet Framework...")
-    model = GreeceDownscalingModule(
+    print("🏗️ Building UNet-HuberPSD model...")
+
+    model = GreeceDownscalingHuberPSDModule(
         in_channels=cfg["img_in_channels"],
         out_channels=cfg["img_out_channels"],
         learning_rate=float(cfg["lr"]),
-        use_psd_loss=cfg["use_psd_loss"],
-        anneal_epochs=cfg["anneal_epochs"],
+        init_lambda=float(cfg["init_lambda"]),
+        max_lambda=float(cfg["max_lambda"]),
+        anneal_epochs=int(cfg["anneal_epochs"]),
         savepreds_path=cfg["savepreds_path"]
     )
 
-    # Callback 1: Save the single best model based on validation loss
-    best_checkpoint_callback = ModelCheckpoint(
-        monitor="val/loss",
-        dirpath="/kaggle/working/weights",
-        filename="best-baseline-unet",
-        save_top_k=1,
-        mode="min"
-    )
+    weights_dir = "/kaggle/working/weights/huber_psd"
+    os.makedirs(weights_dir, exist_ok=True)
 
-    # Callback 2: Save the absolute latest training state for interruption safety (Weights + Optimizers)
-    last_checkpoint_callback = ModelCheckpoint(
-        dirpath="/kaggle/working/weights",
-        filename="last-checkpoint",
+    checkpoint_callback = ModelCheckpoint(
+        monitor="val/loss",
+        dirpath=weights_dir,
+        filename="best-unet-huber-psd",
+        save_top_k=1,
+        mode="min",
         save_last=True
     )
 
     lr_monitor = LearningRateMonitor(logging_interval="epoch")
     epoch_logger = LogEveryEpoch()
 
-    callbacks_list = [best_checkpoint_callback, last_checkpoint_callback, lr_monitor, epoch_logger]
-    
-    # Early Stopping with a large patience window to protect loss annealing curves
-    print("⏱️ Activating EarlyStopping with patience=20 to safeguard training trajectory...")
-    early_stop = EarlyStopping(
-        monitor="val/loss", 
-        patience=20, 
-        mode="min", 
-        verbose=True
-    )
-    callbacks_list.append(early_stop)
+    callbacks_list = [
+        checkpoint_callback,
+        lr_monitor,
+        epoch_logger
+    ]
 
-    # Initialize PyTorch Lightning Trainer over Multi-GPU DDP setup
     trainer = Trainer(
         max_epochs=cfg["epochs"],
-        accelerator="gpu",
-        devices=2,                                                                                                                                                                                                                                                                          
-        strategy="ddp_find_unused_parameters_true",
+        accelerator="gpu" if torch.cuda.is_available() else "cpu",
+        devices=torch.cuda.device_count() if torch.cuda.is_available() else 1,
+        strategy="ddp_find_unused_parameters_true" if torch.cuda.device_count() > 1 else "auto",
         callbacks=callbacks_list,
         precision=cfg["precision"],
-        enable_progress_bar=False,
+        enable_progress_bar=True,
         log_every_n_steps=50
     )
 
-    # Establish checkpoint paths for seamless resume functionality
-    resume_path = "/kaggle/working/weights/last.ckpt"
+    resume_path = os.path.join(weights_dir, "last.ckpt")
+
     if os.path.exists(resume_path):
-        print(f"🔄 Found unfinished training state at {resume_path}. Resuming execution loop...")
+        print(f" Found last checkpoint. Resuming from: {resume_path}")
     else:
-        print("🆕 No previous checkpoint located. Starting training loop from scratch...")
+        print(" No checkpoint found. Starting from scratch.")
         resume_path = None
 
-    print("\n🔥 Launching execution loop over 2 GPUs...")
+    print("\n Launching UNet-HuberPSD training...")
     start_time = time.time()
-    
-    # Fit model using either the resumed checkpoint state or fresh initialization
-    trainer.fit(model, datamodule=data_module, ckpt_path=resume_path)
-    
+
+    trainer.fit(
+        model,
+        datamodule=data_module,
+        ckpt_path=resume_path
+    )
+
     end_time = time.time()
-    
+
     if trainer.is_global_zero:
         total_seconds = end_time - start_time
-        hours, minutes, seconds = int(total_seconds // 3600), int((total_seconds % 3600) // 60), int(total_seconds % 60)
-        print(f"\n⏱️ TRAINING COMPLETE! Total Execution Time: {hours}h {minutes}m {seconds}s")
+        hours = int(total_seconds // 3600)
+        minutes = int((total_seconds % 3600) // 60)
+        seconds = int(total_seconds % 60)
+
+        print(f"\n⏱️ TRAINING COMPLETE! Total Time: {hours}h {minutes}m {seconds}s")
