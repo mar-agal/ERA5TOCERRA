@@ -277,3 +277,23 @@ class PatchGANPSDGeneratorLoss(nn.Module):
         return d_loss, log
 
 
+class HuberPSDLoss(nn.Module):
+    """
+    Loss = Huber + lambda_psd * PSD
+    """
+
+    def __init__(self, spatial_resolution_km: float = 5.5):
+        super().__init__()
+        self.huber = nn.SmoothL1Loss()
+        self.psd = FourierLossCarlo(spatial_resolution_km=spatial_resolution_km)
+
+    def forward(self, pred: torch.Tensor, target: torch.Tensor, lambda_psd: float):
+        pred = pred.float()
+        target = target.float()
+
+        huber_loss = self.huber(pred, target)
+        _, psd_loss = self.psd(pred, target)
+
+        total_loss = huber_loss + lambda_psd * psd_loss
+
+        return total_loss, huber_loss, psd_loss
