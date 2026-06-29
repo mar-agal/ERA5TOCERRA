@@ -74,7 +74,7 @@ class GreeceDownscalingHuberPSDModule(LightningModule):
         self.log(
             "train/loss",
             loss,
-            on_step=True,
+            on_step=False,
             on_epoch=True,
             prog_bar=True
         )
