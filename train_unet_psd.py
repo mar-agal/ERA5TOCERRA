@@ -99,8 +99,8 @@ if __name__ == "__main__":
         strategy="ddp_find_unused_parameters_true" if torch.cuda.device_count() > 1 else "auto",
         callbacks=callbacks_list,
         precision=cfg["precision"],
-        enable_progress_bar=True,
-        log_every_n_steps=50
+        enable_progress_bar=False,
+        log_every_n_steps=1000
     )
 
     resume_path = os.path.join(weights_dir, "last.ckpt")
