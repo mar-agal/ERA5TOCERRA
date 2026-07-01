@@ -297,3 +297,48 @@ class HuberPSDLoss(nn.Module):
         total_loss = huber_loss + lambda_psd * psd_loss
 
         return total_loss, huber_loss, psd_loss
+
+
+class HuberPSDGradientLoss(nn.Module):
+    """
+    Loss = Huber + lambda_psd * PSD + lambda_grad * Gradient
+    """
+
+    def __init__(self, spatial_resolution_km: float = 5.5):
+        super().__init__()
+        self.huber = nn.SmoothL1Loss()
+        self.psd = FourierLossCarlo(spatial_resolution_km=spatial_resolution_km)
+
+    def gradient_loss(self, pred: torch.Tensor, target: torch.Tensor):
+        pred_dx = pred[:, :, :, 1:] - pred[:, :, :, :-1]
+        pred_dy = pred[:, :, 1:, :] - pred[:, :, :-1, :]
+
+        target_dx = target[:, :, :, 1:] - target[:, :, :, :-1]
+        target_dy = target[:, :, 1:, :] - target[:, :, :-1, :]
+
+        loss_dx = torch.mean(torch.abs(pred_dx - target_dx))
+        loss_dy = torch.mean(torch.abs(pred_dy - target_dy))
+
+        return loss_dx + loss_dy
+
+    def forward(
+        self,
+        pred: torch.Tensor,
+        target: torch.Tensor,
+        lambda_psd: float = 0.1,
+        lambda_grad: float = 0.2,
+    ):
+        pred = pred.float()
+        target = target.float()
+
+        huber_loss = self.huber(pred, target)
+        _, psd_loss = self.psd(pred, target)
+        grad_loss = self.gradient_loss(pred, target)
+
+        total_loss = (
+            huber_loss
+            + lambda_psd * psd_loss
+            + lambda_grad * grad_loss
+        )
+
+        return total_loss, huber_loss, psd_loss, grad_loss
