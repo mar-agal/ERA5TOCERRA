@@ -11,7 +11,7 @@
 ### Temporal resolution of 3 hours
 
 <p align="center">
-  <img src="images/overview.png" width="850">
+  <img src="figures/comparison.png" width="800">
 </p>
 
 ---
@@ -53,17 +53,20 @@ This repository contains several key components that are integral to the project
 
 ## train_unet.py
 
-**Description**
+**Description:**
 
-Main training script used in this project. It trains the U-Net model using PyTorch Lightning.
+Main training script used in this project.
+
+Supports both standard U-Net training using the Mean Squared Error (MSE) loss and training with an additional Power Spectral Density (PSD) loss. The desired training mode can be selected through the configuration parameters.
 
 ---
+## train_unet_psd.py
 
-## test_unet.py
+**Description:**
 
-**Description**
+Trains the pretrained U-Net model using Smooth L1 (Huber) loss together with an additional Power Spectral Density (PSD) loss.
 
-Evaluates the trained U-Net (basic) model on the test dataset.
+The model is initialized from the pretrained U-Net weights trained with MSE.
 
 ---
 
@@ -74,6 +77,7 @@ Evaluates the trained U-Net (basic) model on the test dataset.
 Evaluates interpolation baselines and compares them with the U-Net predictions.
 
 ---
+
 
 ## src/data_module.py
 
@@ -111,7 +115,7 @@ Implements the evaluation metrics used throughout the experiments.
 
 **Description**
 
-Utilities used for plotting predictions, comparisons and evaluation figures (psd curves, friquency distribution).
+Utilities used for plotting predictions, comparisons and evaluation figures (psd curves, frequency distribution).
 
 ---
 
@@ -133,7 +137,7 @@ PyTorch Lightning implementation of the U-Net training pipeline.
 
 **Description**
 
-Variant of the Lightning module including Power Spectral Density (PSD) analysis.
+Lightning module implementing the U-Net model with Smooth L1 (Huber) and Power Spectral Density (PSD) losses.
 
 ---
 
@@ -170,21 +174,38 @@ It includes:
 
 # Data Availability
 
-A dataset containing the processed ERA5 and CERRA tensors in NumPy format is freely available on Kaggle.
+The processed datasets used in this project are freely available as Kaggle Datasets.
 
-The trained U-Net model weights are also available as a Kaggle Dataset.
+### Training Datasets
 
-The normalization statistics used during training are available as a separate Kaggle Dataset.
+- **ERA5 Training Dataset:** [Kaggle Dataset](https://www.kaggle.com/datasets/mariaagalioti/era5-train)
+- **CERRA Training Dataset:** [Kaggle Dataset](https://www.kaggle.com/datasets/mariaagalioti/cerra-train)
 
-The raw climate data used in this project is available from the Copernicus Climate Data Store (CDS) for both ERA5 and CERRA.
+### Validation and Test Datasets
 
-### ERA5
+The validation and test datasets for both ERA5 and CERRA are available in the following **[Kaggle Dataset](https://www.kaggle.com/datasets/mariaagalioti/dataset)**.
 
-https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels
+### Static Data
 
-### CERRA
+The static variables used during training (e.g., land-sea mask and orography) are available in the following **[Kaggle Dataset](https://www.kaggle.com/datasets/mariaagalioti/static-data)**.
 
-https://cds.climate.copernicus.eu/datasets/reanalysis-cerra-single-levels
+### Model Weights
+
+The trained model weights are available as Kaggle Datasets.
+
+- **U-Net (MSE):** [Kaggle Dataset](https://www.kaggle.com/datasets/mariaagalioti/wieghts)
+- **U-Net (MSE + PSD):** [Kaggle Dataset](https://www.kaggle.com/datasets/mariaagalioti/weights-unet-psd-loss)
+
+### Normalization Statistics
+
+The normalization statistics used during training are available in the following **[Kaggle Dataset](https://www.kaggle.com/datasets/mariaagalioti/stats-era-cerra)**.
+
+---
+
+The raw climate data used in this project is available from the Copernicus Climate Data Store (CDS):
+
+- **ERA5:** https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels
+- **CERRA:** https://cds.climate.copernicus.eu/datasets/reanalysis-cerra-single-levels
 
 ---
 
