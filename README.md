@@ -74,10 +74,25 @@ The model is initialized from the pretrained U-Net weights trained with MSE.
 
 **Description**
 
-Evaluates interpolation baselines and compares them with the U-Net predictions.
+Applies bilinear interpolation to the ERA5 inputs and generates the baseline predictions.
 
 ---
 
+## test_unet.py
+
+**Description**
+
+Generates predictions using the baseline U-Net model and computes evaluation metrics and diagnostic plots.
+
+---
+
+## test_unet_all.py
+
+**Description**
+
+Generates predictions using both the baseline U-Net and the U-Net-PSD models, and computes evaluation metrics and comparison plots.
+
+---
 
 ## src/data_module.py
 
@@ -204,20 +219,12 @@ The normalization statistics used during training are available in the following
 
 The raw climate data used in this project is available from the Copernicus Climate Data Store (CDS):
 
-- **ERA5:** https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels
-- **CERRA:** https://cds.climate.copernicus.eu/datasets/reanalysis-cerra-single-levels
+- **ERA5:** [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels)
+- **CERRA:** [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/datasets/reanalysis-cerra-single-levels)
+
 
 ---
 
-# Results
-
-<p align="center">
-  <img src="images/results.png" width="900">
-</p>
-
-Example comparison between the ERA5 input, the U-Net prediction and the corresponding CERRA target.
-
----
 
 # Environment
 
