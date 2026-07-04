@@ -16,13 +16,13 @@ class LogEvery10Epochs(Callback):
         if current_epoch % 10 == 0 or current_epoch == trainer.max_epochs - 1:
             val_loss = trainer.callback_metrics.get("val/loss")
             if val_loss is not None:
-                print(f"\n📢 [EPOCH {current_epoch:03d}] Current Validation Loss: {val_loss:.6f}")
+                print(f"\n [EPOCH {current_epoch:03d}] Current Validation Loss: {val_loss:.6f}")
 
 if __name__ == "__main__":
     with open("config.yaml", "r") as f:
         cfg = yaml.safe_load(f)
 
-    print("📥 Initializing DataModule...")
+    print(" Initializing DataModule...")
     data_module = GreeceDownscalingDataModule(
         batch_size=cfg["batch_size"],
         num_workers=cfg["num_workers"],
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     data_module.cerra_stats_json = "/kaggle/input/datasets/mariaagalioti/stats-era-cerra/cerra_train_temp_stats.json"
     data_module.orog_stats_json = "/kaggle/input/datasets/mariaagalioti/stats-era-cerra/orography_stats.json"
 
-    print("🏗️ Building Modular UNet Framework...")
+    print(" Building Modular UNet Framework...")
     model = GreeceDownscalingModule(
         in_channels=cfg["img_in_channels"],
         out_channels=cfg["img_out_channels"],
@@ -63,11 +63,11 @@ if __name__ == "__main__":
     callbacks_list = [checkpoint_callback, lr_monitor, epoch_logger]
     
     if not cfg["use_psd_loss"]:
-        print("🛑 MSE Only detected: Activating EarlyStopping with patience=12...")
+        print(" MSE Only detected: Activating EarlyStopping with patience=12...")
         early_stop = EarlyStopping(monitor="val/loss", patience=12, mode="min", verbose=True)
         callbacks_list.append(early_stop)
     else:
-        print("📈 PSD Blended Loss detected: EarlyStopping disabled to protect annealing curves.")
+        print(" PSD Blended Loss detected: EarlyStopping disabled to protect annealing curves.")
 
     trainer = Trainer(
         max_epochs=cfg["epochs"],
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         log_every_n_steps=50
     )
 
-    print("\n🔥 Launching execution loop over 2 GPUs...")
+    print("\n Launching execution loop over 2 GPUs...")
     start_time = time.time()
     trainer.fit(model, datamodule=data_module)
     end_time = time.time()
@@ -88,4 +88,4 @@ if __name__ == "__main__":
     if trainer.is_global_zero:
         total_seconds = end_time - start_time
         hours, minutes, seconds = int(total_seconds // 3600), int((total_seconds % 3600) // 60), int(total_seconds % 60)
-        print(f"\n⏱️ TRAINING COMPLETE! Total Time: {hours}h {minutes}m {seconds}s")
+        print(f"\n TRAINING COMPLETE! Total Time: {hours}h {minutes}m {seconds}s")
