@@ -222,6 +222,12 @@ The raw climate data used in this project is available from the Copernicus Clima
 - **ERA5:** [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels)
 - **CERRA:** [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/datasets/reanalysis-cerra-single-levels)
 
+---
+# Outputs
+
+The `outputs/` directory contains the evaluation figures and metric files.
+
+Outputs are available at [Kaggle Dataset](https://www.kaggle.com/datasets/mariaagalioti/era5-to-cerra-outputs).
 
 ---
 
