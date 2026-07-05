@@ -1,0 +1,7 @@
+[BILINEAR Test Evaluation Summary]
+Global_MAE: 1.130547
+Global_MSE: 2.651743
+Global_RMSE: 1.628417
+Global_BIAS: 0.221702
+Global_SSIM: 0.879838
+Global_PSNR: 33.184547

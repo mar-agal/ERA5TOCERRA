@@ -1,0 +1,7 @@
+[UNET_BASELINE Test Evaluation Summary]
+Global_MAE: 0.635701
+Global_MSE: 0.757926
+Global_RMSE: 0.870589
+Global_BIAS: -0.010858
+Global_SSIM: 0.974473
+Global_PSNR: 38.541538
