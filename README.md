@@ -18,32 +18,13 @@
 
 # Installation
 
-This project is designed to run on **Kaggle**.
-
-Clone the repository
 
 ```bash
-git clone [https://github.com/<your_username>/<repository_name>.git](https://github.com/mar-agal/ERA5TOCERRA)
+git clone https://github.com/mar-agal/ERA5TOCERRA.git
 %cd /kaggle/working/ERA5TOCERRA
-```
-
-Install the required dependency
-
-```bash
 pip install lightning
 ```
 
-Run the training
-
-```bash
-python train_unet.py
-```
-
-Evaluate the trained model
-
-```bash
-python test_unet.py
-```
 
 ---
 
