@@ -133,7 +133,7 @@ PyTorch Lightning implementation of the U-Net training pipeline.
 
 **Description**
 
-Lightning module implementing the U-Net model with Smooth L1 (Huber) and Power Spectral Density (PSD) losses.
+Lightning module implementing the U-Net model with Smooth L1 (Huber) and Power Spectral Density (PSD) loss functions.
 
 ---
 
