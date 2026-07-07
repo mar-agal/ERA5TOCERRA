@@ -183,7 +183,7 @@ The validation and test datasets for both ERA5 and CERRA are available in the fo
 
 ### Static Data
 
-The static variables used during training (e.g., land-sea mask and orography) are available in the following **[Kaggle Dataset](https://www.kaggle.com/datasets/mariaagalioti/static-data)**.
+The static variables used during training are available in the following **[Kaggle Dataset](https://www.kaggle.com/datasets/mariaagalioti/static-data)**.
 
 ### Model Weights
 
