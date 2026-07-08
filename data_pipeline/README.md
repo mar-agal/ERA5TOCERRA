@@ -36,10 +36,7 @@ To ensure spatial consistency for the model, all data is mapped to a regular Lat
 - **Super-resolution Ratio:** The super-resolution ratio between ERA-5 and CERRA is 52×52 to 256×256, which is an upscaling factor of approximately **x4.9**.
 ### `data_pipeline/config.yaml`
 
-Centralized configuration file containing:
-- Geographical boundaries
-- Grid specifications
-- Path definitions
+Centralized configuration file containing: Path definitions
 
 ### `data_pipeline/split.py`
 
