@@ -1,6 +1,6 @@
 # data_pipeline overview
 
-A collection of modules for processing climate data to support super-resolution downscaling tasks. This pipeline handles:
+ This pipeline handles:
 
 - Acquisition of ERA5 (low-resolution) and CERRA (high-resolution) data via CDS API
 - Reprojection and alignment of both datasets to a common 256×256 grid over Greece
@@ -45,11 +45,11 @@ Centralized configuration file containing:
 
 Temporal data partitioning script that organizes files into:
 
-- **Train** (2010–2019) — long-term atmospheric patterns
-- **Validation** (2020) — hyperparameter tuning
-- **Test** (2021) — final model evaluation
+- **Train** (2010–2019) 
+- **Validation** (2020)
+- **Test** (2021) 
 
 ### `data_pipeline/extract_stats.py`
 
-Statistical processing engine that computes global statistics (mean, std, min, max, median) across the training dataset using Dask/PyTorch. Results are saved in https://www.kaggle.com/datasets/mariaagalioti/stats-era-cerra for input normalization.
+Statistical processing engine that computes global statistics (mean, std, min, max, median) across the training dataset using Dask/PyTorch. 
 
